@@ -1,5 +1,5 @@
 #define _CRT_SECURE_NO_WARNINGS
-#include "Source.h"
+#include "Bank management.h"
 
 int login(char data_manage[][20]) //∂¡»Î’À∫≈√‹¬Î
 {
