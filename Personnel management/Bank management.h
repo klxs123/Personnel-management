@@ -26,7 +26,7 @@ int updateData(NodePtr node,char[]);
 int enterChoice(bool);                   //输出界面用来选择
 int deleteRecord(NodePtr *);
 int login(char[][20]);
-int login_accountdata(char manage[][20], char[]);
+int login_accountdata(char manage[][20], char*);
 int login_passworddata(char[], char[]);
 int Login_system(char[][20]);
 void Datacopy(char[][20], NodePtr);

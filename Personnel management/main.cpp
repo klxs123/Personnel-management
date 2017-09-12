@@ -9,8 +9,13 @@ int main()
 	login(manage);   
 	readdata(&header, manage);        //读入已经添加的账号
 	int choice = 0;
-	if (int return_value = Login_system(manage))
+	while (1)
 	{
+		int return_value = Login_system(manage);
+		if (return_value == 0)
+		{
+			return 0;
+		}
 		while (choice = enterChoice(FLAG))
 		{
 
@@ -36,7 +41,7 @@ int main()
 				if (0 == FLAG)
 				{
 					Writedata(header, manage);
-					return 0;
+					break;
 				}
 				deleteRecord(&header);
 				break;
@@ -48,26 +53,52 @@ int main()
 				{
 					Writedata(header, manage);
 				}
-				return 0;
+				break;
+			default:
+				break;
 			}
+			if (choice == 5)
+				break;
 
 		}
+
 	}
 	return 0;
 }
 
-int Login_system(char manage_data[][20])
+int Enterchoice(void)
 {
-	char login_account[20] = { 0 };
-	char login_password[20] = { 0 };
 	int choice = 0;
 	while (1)
+	{
+		printf(
+			"	 __________________________________________________\n"
+			"	|                                                  | \n"
+		);
+		fputs("	|Please choice login account (1) or exit system(0) |\n", stdout);
+		printf(
+			"	|__________________________________________________|\n---> "
+		);
+		scanf("%d", &choice);
+		if (choice == 1 || choice == 0)
+			break;
+	}
+	return choice;
+}
+
+int Login_system(char manage_data[][20])
+{
+	char* login_account = (char*)malloc(20);
+	memset(login_account, 0, 20);
+	char login_password[20] = { 0 };
+	int choice = 0;
+	while (int login_choice = Enterchoice())
 	{
 		printf("Please input your Login account:\n");
 		scanf("%s", login_account);
 		if (int flag = login_accountdata(manage_data, login_account))
 		{
-			if (!memcmp(login_account, manage_data[0], strlen(manage_data[1])))
+			if (!strcmp(login_account, manage_data[0]))
 			{
 				fputs("The current account is an administrator account!\n", stdout);
 				FLAG = 1;
@@ -99,6 +130,7 @@ int Login_system(char manage_data[][20])
 		}
 
 	}
+	return 0;
 }
 
 void newRecord(NodePtr *nodeptr,char manage[][20])
@@ -148,15 +180,31 @@ NodePtr changechoice(NodePtr findPtr)
 	double balance = 0;
 	while (choice != 0)
 	{
-		printf(
-			"		* * * * * * * * * * * * * * * * \n"
-			"		* Input want charge dataitem: * \n"
-			"		* 1 - to change name!         * \n"
-			"		* 2 - to change password!     * \n"
-			"		* 3 - to change balance!      * \n"
-			"		* 0 - to change complete!     * \n"
-			"		* * * * * * * * * * * * * * * * \n?"	
-		);
+		if (1 == FLAG)
+		{
+			printf(
+				"	* * * * * * * * * * * * * * * * * * * \n"
+				"	*      Select The Data To Updated   * \n"
+				"	*-----------------------------------* \n"
+				"	*        1 - to change name         * \n"
+				"	*        2 - to change password     * \n"
+				"	*        3 - to change balance      * \n"
+				"	*        0 - to change complete     * \n"
+				"	* * * * * * * * * * * * * * * * * * *\n---> "
+			);
+		}
+		else
+		{
+			printf(
+				"	* * * * * * * * * * * * * * * * * * * \n"
+				"	*     Select The Data To Updated    * \n"
+				"	*-----------------------------------* \n"
+				"	*        1 - to change name         * \n"
+				"	*        2 - to change password     * \n"
+				"	*        0 - to change complete     * \n"
+				"	* * * * * * * * * * * * * * * * * * *\n---> "
+			);
+		}
 		scanf("%d", &choice);
 		switch (choice)
 		{
@@ -228,7 +276,7 @@ int updateData(NodePtr node, char return_value[])
 	int account = 0;
 	if(return_value)
 	{
-		int account = atoi(return_value);
+		account = atoi(return_value);
 	}
 	double balance = 0;
 	NodePtr findPtr = node;

@@ -20,7 +20,7 @@ int login(char data_manage[][20]) //¶ÁÈëÕËºÅÃÜÂë
 	return 0;
 }
 
-int login_accountdata(char managedata[][20], char input_manage_data[])
+int login_accountdata(char managedata[][20], char* input_manage_data)
 {
 	for (int amount = 0; amount <= MAX_MANAGE; amount += 2)
 	{
@@ -28,7 +28,7 @@ int login_accountdata(char managedata[][20], char input_manage_data[])
 		{
 			return 0;
 		}
-		if (!memcmp(managedata[amount], input_manage_data, strlen(managedata[amount])))
+		if (!strcmp(managedata[amount], input_manage_data))
 		{
 			return amount + 1;
 		}
@@ -37,7 +37,7 @@ int login_accountdata(char managedata[][20], char input_manage_data[])
 
 int login_passworddata(char manage[], char login_password[])
 {
-	if (!memcmp(manage, login_password, strlen(manage)))
+	if (!strcmp(manage, login_password))
 	{
 		return 1;
 	}

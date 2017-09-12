@@ -17,14 +17,15 @@ int enterChoice(bool flag)
 	if (1 == flag)
 	{
 		printf(
-			"		* * * * * * * * * * * * * * * *\n"
-			"		* Enter your choice           *\n"
-			"		* 1 - add an account          *\n"
-			"		* 2 - updata a account        *\n"
-			"		* 3 - delete an account       *\n"
-			"		* 4 - print accounts          *\n"
-			"		* 5 - end program             *\n"
-			"		* * * * * * * * * * * * * * * *\n? "
+			"	* * * * * * * * * * * * * * * * * * * \n"
+			"	*        Enter Your Choice          * \n"
+			"	*-----------------------------------* \n"
+			"	*        1 - add an account         * \n"
+			"	*        2 - updata a account       * \n"
+			"	*        3 - delete an account      * \n"
+			"	*        4 - print accounts         * \n"
+			"	*        5 - end program and save   * \n"
+			"	* * * * * * * * * * * * * * * * * * * \n--->  "
 		);
 	}
 	else
@@ -35,7 +36,7 @@ int enterChoice(bool flag)
 			"		* 1 - updata a account        *\n"
 			"		* 2 - print accounts          *\n"
 			"		* 3 - end program             *\n"
-			"		* * * * * * * * * * * * * * * *\n? "
+			"		* * * * * * * * * * * * * * * *\n---> "
 		);
 	}
 	scanf("%d", &menuChoice);
