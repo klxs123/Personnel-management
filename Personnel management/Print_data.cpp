@@ -4,9 +4,9 @@ void Print_updated_information(NodePtr findPtr)
 {
 	if (findPtr)
 	{
-		fprintf(stdout, "%-s\t\t%-s\t\t%s\t%s\n",
+		fprintf(stdout, "%-12s%-12s%-12s%-10s\n",
 			"AcctNum", "Name", "Password", "Balance");
-		printf("%-d\t\t%s\t\t%s\t\t%.2f\t\n",
+		printf("%-12d%12s%12s%10.2f\n",
 			findPtr->acctNum, findPtr->data.Name,
 			findPtr->password, findPtr->data.balance);
 	}
@@ -23,10 +23,10 @@ int enterChoice(bool flag)
 			"		*         1 - add an account            * \n"
 			"		*         2 - updata a account          * \n"
 			"		*         3 - delete an account         * \n"
-			"		*         4 - print accounts            * \n"
+			"		*         4 - print all accounts        * \n"
 			"		*         5 - seek Specify the account  * \n"
 			"		*         6 - end program and save      * \n"
-			"		* * * * * * * * * * * * * * * * * * * * *\n-->  "
+			"		* * * * * * * * * * * * * * * * * * * * *\n--> "
 		);
 	}
 	else
@@ -80,17 +80,17 @@ NodePtr changechoice(NodePtr findPtr, bool Flag)
 		switch (choice)
 		{
 		case 1:
-			fputs("Input name:\n", stdout);
+			fputs("Input name:\n-->", stdout);
 			scanf("%s", findPtr->data.Name);
 			break;
 		case 2:
-			fputs("Input password:\n", stdout);
+			fputs("Input password:\n-->", stdout);
 			scanf("%s", findPtr->password);
 			break;
 		case 3:
 			if (0 == Flag)
 				break;
-			fputs("Input change (+) or (-) balance: ", stdout);
+			fputs("Input change (+) or (-) balance: \n-->", stdout);
 			scanf("%lf", &balance);
 			findPtr->data.balance += balance;
 			break;

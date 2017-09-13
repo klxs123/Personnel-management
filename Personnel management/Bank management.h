@@ -6,6 +6,8 @@
 #define false 0
 
 const int MAX_MANAGE = 20;
+const char ADMIN_ACCOUNT[] = "admin";
+const char ADMIIN_PASSWORD[] = "666666";
 
 typedef struct _manage
 {

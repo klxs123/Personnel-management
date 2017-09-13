@@ -3,7 +3,7 @@
 
 int login_read_information(char data_manage[][20]) //∂¡»Î’À∫≈√‹¬Î
 {
-	FILE *file = fopen("D:\\github Project\\Personnel management\\password.txt", "r+");
+	FILE *file = fopen("D:\\github Project\\Personnel management\\account.txt", "r+");
 	int data_amount = 0;
 	while (!feof(file))
 	{
@@ -13,8 +13,8 @@ int login_read_information(char data_manage[][20]) //∂¡»Î’À∫≈√‹¬Î
 	}
 	if (data_manage[0][0] == 0)
 	{
-		memcpy(data_manage[0], "admin", sizeof("admin"));
-		memcpy(data_manage[1], "666666", sizeof("666666"));
+		memcpy(data_manage[0], ADMIN_ACCOUNT, sizeof(ADMIN_ACCOUNT));
+		memcpy(data_manage[1], ADMIIN_PASSWORD, sizeof(ADMIIN_PASSWORD));
 	}
 	fclose(file);
 	return 0;

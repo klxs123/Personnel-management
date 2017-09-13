@@ -4,9 +4,9 @@ Node* Get_newdata(void)  //获取新账户信息
 {
 	Node* account = (Node*)malloc(sizeof(Node));
 	memset(account, 0, sizeof(Node));
-	fputs("Please input acctNum,password,name,banance:\n", stdout);
-	scanf("%d%s%s%lf", &account->acctNum, account->password,
-		account->data.Name, &account->data.balance);
+	fputs("Please input AcctNum,Name,Password,Banance:\n-->", stdout);
+	scanf("%d%s%s%lf", &account->acctNum, account->data.Name,
+		account->password, &account->data.balance);
 	return account;
 }
 
@@ -44,7 +44,7 @@ void newRecord(NodePtr *nodeptr, char manage[][20], bool Flag)
 	NodePtr CarNode = *nodeptr;
 	if (*nodeptr == 0)
 	{
-		//存储区为空
+		//信息为空
 		*nodeptr = (Node*)malloc(sizeof(Node));
 		memset(*nodeptr, 0, sizeof(Node));
 		CarNode = *nodeptr;
@@ -87,7 +87,7 @@ int deleteRecord(NodePtr *ppNode, bool Flag)
 		return -1;
 	}
 	int accountNum;
-	printf("Enter account number to delete : ");
+	printf("Enter account number to delete : \n-->");
 	scanf("%d", &accountNum);
 	if (*ppNode == 0)
 	{
@@ -147,7 +147,7 @@ void Print_all_Data(Node* data, char return_value[], bool Flag)
 		return;
 	}
 	NodePtr findPtr = data;
-	fprintf(stdout, "%-s\t\t%-s\t\t%s\t%s\n",
+	fprintf(stdout, "%-12s%-12s%-12s%-10s\n",
 		"AcctNum", "Name", "Password", "Balance");
 	while (findPtr != 0)
 	{
@@ -157,7 +157,7 @@ void Print_all_Data(Node* data, char return_value[], bool Flag)
 		}
 		if (1 == Flag)
 		{
-			printf("%-d\t\t%s\t\t%s\t\t%.2f\n",
+			printf("%-12d%-12s%-12s%-10.2f\n",
 				findPtr->acctNum, findPtr->data.Name,
 				findPtr->password, findPtr->data.balance);
 		}
@@ -165,7 +165,7 @@ void Print_all_Data(Node* data, char return_value[], bool Flag)
 		{
 			if (findPtr->acctNum == number)
 			{
-				printf("%-d\t\t%s\t\t%s\t\t%.2f\n",
+				printf("%-12d%-12s%-12s%-8.2f\n",
 					findPtr->acctNum, findPtr->data.Name,
 					findPtr->password, findPtr->data.balance);
 				return;
@@ -207,26 +207,27 @@ void Enquiries_Data(NodePtr header)
 {
 	NodePtr findPtr = header;
 	int faccount = 0;
-	fputs("Please input want to Enquiries account:\n", stdout);
+	fputs("Please input want to Enquiries account:\n--> ", stdout);
 	scanf("%d", &faccount);
 	if (findPtr)
 	{
 		if (findPtr->acctNum == faccount)
 		{
-			fprintf(stdout, "%-s\t\t%-s\t\t%s\t%s\n",
+			fprintf(stdout, "%-12s%-12s%-12s%-12s\n",
 				"AcctNum", "Name", "Password", "Balance");
-			printf("%-d\t\t%s\t\t%s\t\t%.2f\t\n",
+			printf("%-12d%-12s%-12s%-10.2f\n",
 				findPtr->acctNum, findPtr->data.Name,
 				findPtr->password, findPtr->data.balance);
 			return ;
 		}
 		findPtr = findPtr->next;
 	}
+	fputs("This account has no information!\n", stdout);
 }
 
 Node* Read_Saved_information(NodePtr* ppNode, char manage[][20])
 {
-	FILE* file = fopen("D:\\github Project\\Personnel management\\account.dat", "r+");
+	FILE* file = fopen("D:\\github Project\\Personnel management\\Data.dat", "r+");
 	NodePtr pCarNode = *ppNode;
 	int count_seek = 1;
 	int amount = 2;
@@ -263,7 +264,7 @@ Node* Read_Saved_information(NodePtr* ppNode, char manage[][20])
 
 void Writedata(Node* header, char manage[][20])
 {
-	FILE* file = fopen("D:\\github Project\\Personnel management\\account.dat", "r+");
+	FILE* file = fopen("D:\\github Project\\Personnel management\\Data.dat", "w+");
 	NodePtr writedataPtr = header;
 	int seek_count = 0;
 	while (writedataPtr != 0)
@@ -274,7 +275,7 @@ void Writedata(Node* header, char manage[][20])
 		seek_count++;
 	}
 	fclose(file);
-	file = fopen("D:\\github Project\\Personnel management\\password.txt", "w+");
+	file = fopen("D:\\github Project\\Personnel management\\account.txt", "w+");
 	for (int amount = 0; amount <= MAX_MANAGE; amount++)
 	{
 		if (manage[amount][0] == 0)

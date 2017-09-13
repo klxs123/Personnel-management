@@ -73,44 +73,61 @@ int main()
 	return 0;
 }
 
-
 int Login_system(char manage_data[][20])
 {
 	char* login_account = (char*)malloc(20);
 	memset(login_account, 0, 20);
 	char login_password[20] = { 0 };
 	int choice = 0;
+	int password_count = 1;
 	while (int login_choice = Login_Enterchoice())
 	{
-		printf("Please input your Login account:\n");
+		printf("Please input your Login account:\n-->");
 		scanf("%s", login_account);
 		if (int flag = login_accountdata(manage_data, login_account))
 		{
 			if (!strcmp(login_account, manage_data[0]))
 			{
-				fputs("The current account is an administrator account!\n", stdout);
+				fputs(
+					"\n"
+					"	    The current account is an administrator account\n"
+					"--------------------------------------------------------------------------------\n",
+					stdout);
 				FLAG = 1;
 			}
 			else
 			{
-				fputs("The current account is not an administrator account!\n", stdout);
+				fputs(
+					"\n"
+					"	    The current account is not administrator account\n"
+					"--------------------------------------------------------------------------------\n",
+					stdout);
 			}
-			fputs("Please input your password:\n", stdout);
-			scanf("%s", login_password);
-			if (login_passworddata(manage_data[flag], login_password))
+			while (password_count <= 3)
 			{
-				free(login_account);
-				login_account = 0;
-				if (1 == FLAG)
+				fputs("Please input your password,", stdout);
+				printf("Surplus %d chances!\n-->", 4 - password_count);
+				scanf("%s", login_password);
+				if (login_passworddata(manage_data[flag], login_password))
 				{
-					return 1;
+					free(login_account);
+					login_account = 0;
+					if (1 == FLAG)
+					{
+						return 1;
+					}
+					return flag - 1;
 				}
-				return flag - 1;
-			}
-			else
-			{
-				fputs("Password input failure!\n", stdout);
-				FLAG = 0;
+				else
+				{
+					fputs("Password input failure! ", stdout);
+					if (password_count == 3)
+					{
+						fputs("Password error 3 times!\n", stdout);
+						FLAG = 0;
+					}
+				}
+				password_count++;
 			}
 		}
 		else
