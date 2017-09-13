@@ -1,7 +1,7 @@
 #include "Bank management.h"
 
 
-int login(char data_manage[][20]) //¶ÁÈëÕËºÅÃÜÂë
+int login_read_information(char data_manage[][20]) //¶ÁÈëÕËºÅÃÜÂë
 {
 	FILE *file = fopen("D:\\github Project\\Personnel management\\password.txt", "r+");
 	int data_amount = 0;
