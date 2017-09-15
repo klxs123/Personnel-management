@@ -258,7 +258,7 @@ void Enquiries_Data(NodePtr header)					// ²éÑ¯ÕË»§
 	int faccount = 0;
 	fputs("Please input want to Enquiries account:\n--> ", stdout);
 	scanf("%d", &faccount);
-	if (findPtr)
+	while (findPtr)
 	{
 		if (findPtr->acctNum == faccount)
 		{

@@ -32,7 +32,7 @@ int newRecord(NodePtr *, char[][20], bool);
 int Data_synchronization(char[][20], NodePtr);
 int Write_array_information(NodePtr ,char[][20]);
 int login_accountdata(char manage[][20], char*);
-void To_heavy(NodePtr);
+//void To_heavy(NodePtr);
 void Enquiries_Data(NodePtr);
 void Print_updated_information(NodePtr);
 void Print_all_Data(Node *, char[], bool);

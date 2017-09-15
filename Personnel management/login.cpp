@@ -1,7 +1,7 @@
 #include "Bank management.h"
 
 
-int Write_array_information(NodePtr pNode, char manage[][20]) //写入账号密码到数组
+int Write_array_information(NodePtr pNode, char manage[][20])	//写入账号密码到数组
 {
 	strcpy(manage[0], ADMIN_ACCOUNT);
 	strcpy(manage[1], ADMIIN_PASSWORD);
@@ -94,7 +94,9 @@ Node* Read_Saved_information(NodePtr* ppNode)
 		pCarNode->next = pNewNode;
 		pCarNode = pNewNode;
 
-		fread(pCarNode, sizeof(Node), 1, file);
+		int ret = fread(pCarNode, sizeof(Node), 1, file);
+		if (ret != 1)
+			break;
 		if (pCarNode->acctNum == 0)
 		{
 			return 0;
@@ -103,6 +105,6 @@ Node* Read_Saved_information(NodePtr* ppNode)
 		count_seek++;
 	}
 	fclose(file);
-	void To_heavy(NodePtr);
+	//To_heavy(*ppNode);
 	return 0;
 }
