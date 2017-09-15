@@ -1,6 +1,8 @@
 #include "Bank management.h"
 
-Node* Get_newdata(void)  //获取新账户信息
+static int INITIAL_ACCOUNT = 1000; 
+
+Node* Get_newdata(void)  //管理员获取新账户信息
 {
 	Node* account = (Node*)malloc(sizeof(Node));
 	memset(account, 0, sizeof(Node));
@@ -10,10 +12,33 @@ Node* Get_newdata(void)  //获取新账户信息
 	return account;
 }
 
-void Data_synchronization(char manage[][20], NodePtr CarNode)
+Node* Get_ordinary_newdata(NodePtr pNode) //创建普通账户
+{
+	Node* account = (Node*)malloc(sizeof(Node));
+	memset(account, 0, sizeof(Node));
+	while (recordIndex(pNode, INITIAL_ACCOUNT))
+	{
+		INITIAL_ACCOUNT++;
+		recordIndex(pNode, INITIAL_ACCOUNT);
+	}
+	printf("The current acquiescence account is %d !\n", INITIAL_ACCOUNT);
+	fputs("Please input Name and Password:\n-->", stdout);
+	scanf("%s%s", account->data.Name, account->password);
+	account->acctNum = INITIAL_ACCOUNT;
+	account->data.balance = 0;
+	fprintf(stdout, "%-12s%-12s%-12s%-10s\n",
+		"AcctNum", "Name", "Password", "Balance");
+	printf("%-12d%-12s%-12s%-10.2f\n",
+		account->acctNum, account->data.Name,
+		account->password, account->data.balance);
+	INITIAL_ACCOUNT++;
+	return account;
+}
+
+int Data_synchronization(char manage[][20], NodePtr CarNode)  //信息同步到数组
 {
 	int amount;
-	for (amount = 0; amount <= MAX_MANAGE; amount++)
+	for (amount = 2; amount <= MAX_MANAGE; amount++)
 	{
 		if (manage[amount][0] == 0)
 		{
@@ -21,10 +46,11 @@ void Data_synchronization(char manage[][20], NodePtr CarNode)
 		}
 	}
 	_itoa(CarNode->acctNum, manage[amount], 10);
-	memcpy(manage[amount + 1], CarNode->password, strlen(CarNode->password));
+	strcpy(manage[amount + 1], CarNode->password);
+	return amount;
 }
 
-Node* recordIndex(Node* pNode, int account)
+Node* recordIndex(Node* pNode, int account) //判断账户是否存在
 {
 	NodePtr findPtr = pNode;
 	while (findPtr)
@@ -38,9 +64,18 @@ Node* recordIndex(Node* pNode, int account)
 	return 0;
 }
 
-void newRecord(NodePtr *nodeptr, char manage[][20], bool Flag)
+int newRecord(NodePtr *nodeptr, char manage[][20], bool Flag)
 {
-	Node* Data = Get_newdata();
+	int return_value = 0;
+	Node* Data = 0;
+	if (1 == Flag)
+	{
+		Data = Get_newdata();
+	}
+	else
+	{
+		Data = Get_ordinary_newdata(*nodeptr);
+	}
 	NodePtr CarNode = *nodeptr;
 	if (*nodeptr == 0)
 	{
@@ -56,27 +91,20 @@ void newRecord(NodePtr *nodeptr, char manage[][20], bool Flag)
 		{
 			printf("Account #%d already contains information.\n",
 				Data->acctNum);
-			return;
+			return 0;
 		}
 		Node* pNewNode = (Node*)malloc(sizeof(Node));
 		memset(pNewNode, 0, sizeof(Node));
-		CarNode = pNewNode->next;
-		pNewNode->next = *nodeptr;
+		pNewNode->next = CarNode;
 		*nodeptr = pNewNode;
 		CarNode = pNewNode;
 	}
 	CarNode->acctNum = Data->acctNum;
 	strcpy(CarNode->password, Data->password);
 	strcpy(CarNode->data.Name, Data->data.Name);
-	if (1 == Flag)
-	{
-		CarNode->data.balance = Data->data.balance;
-	}
-	else
-	{
-		CarNode->data.balance = 0;
-	}
-	Data_synchronization(manage, CarNode);
+	CarNode->data.balance = Data->data.balance;
+	return_value = Data_synchronization(manage, CarNode);
+	return return_value;
 }
 
 int deleteRecord(NodePtr *ppNode, bool Flag)
@@ -109,7 +137,8 @@ int deleteRecord(NodePtr *ppNode, bool Flag)
 				preNode->next = pNode->next;
 			}
 			free(pNode);
-			break;
+			printf("Delete successful!\n");
+			return 0;
 		}
 		preNode = pNode;
 		pNode = pNode->next;
@@ -128,9 +157,11 @@ int deleteRecord(NodePtr *ppNode, bool Flag)
 			{
 				*ppNode = 0;
 			}
+			printf("Delete successful!\n");
+			return 0;
 		}
 	}
-	printf("Delete successful!\n");
+	printf("This account has no information!\n");
 	return 0;
 }
 
@@ -153,7 +184,7 @@ void Print_all_Data(Node* data, char return_value[], bool Flag)
 	{
 		if (findPtr->acctNum == 0)
 		{
-			return;
+				return ;
 		}
 		if (1 == Flag)
 		{
@@ -203,7 +234,7 @@ int updateData(NodePtr node, char return_value[], bool Flag)
 	}
 }
 
-void Enquiries_Data(NodePtr header) 
+void Enquiries_Data(NodePtr header) // 查询账户
 {
 	NodePtr findPtr = header;
 	int faccount = 0;
@@ -218,73 +249,9 @@ void Enquiries_Data(NodePtr header)
 			printf("%-12d%-12s%-12s%-10.2f\n",
 				findPtr->acctNum, findPtr->data.Name,
 				findPtr->password, findPtr->data.balance);
-			return ;
+			return;
 		}
 		findPtr = findPtr->next;
 	}
 	fputs("This account has no information!\n", stdout);
-}
-
-Node* Read_Saved_information(NodePtr* ppNode, char manage[][20])
-{
-	FILE* file = fopen("D:\\github Project\\Personnel management\\Data.dat", "r+");
-	NodePtr pCarNode = *ppNode;
-	int count_seek = 1;
-	int amount = 2;
-	while (!feof(file))
-	{
-		if (!(*ppNode))
-		{
-			*ppNode = (Node*)malloc(sizeof(Node));
-			memset(*ppNode, 0, sizeof(Node));
-			pCarNode = *ppNode;
-		}
-		else
-		{
-			NodePtr pNewNode = (Node*)malloc(sizeof(Node));
-			memset(pNewNode, 0, sizeof(Node));
-			pNewNode->next = pCarNode->next;
-			pCarNode->next = pNewNode;
-			pCarNode = pNewNode;
-		}
-		fread(pCarNode, sizeof(Node), 1, file);
-		if (pCarNode->acctNum == 0)
-		{
-			return 0;
-		}
-		_itoa(pCarNode->acctNum, manage[amount], 10);
-		memcpy(manage[amount + 1], pCarNode->password, strlen(pCarNode->password));
-		fseek(file, count_seek * sizeof(Node), SEEK_SET);
-		count_seek++;
-		amount++;
-	}
-	fclose(file);
-	return 0;
-}
-
-void Writedata(Node* header, char manage[][20])
-{
-	FILE* file = fopen("D:\\github Project\\Personnel management\\Data.dat", "w+");
-	NodePtr writedataPtr = header;
-	int seek_count = 0;
-	while (writedataPtr != 0)
-	{
-		fwrite(writedataPtr, sizeof(Node), 1, file);
-		fseek(file, seek_count * sizeof(Node), SEEK_CUR);
-		writedataPtr = writedataPtr->next;
-		seek_count++;
-	}
-	fclose(file);
-	file = fopen("D:\\github Project\\Personnel management\\account.txt", "w+");
-	for (int amount = 0; amount <= MAX_MANAGE; amount++)
-	{
-		if (manage[amount][0] == 0)
-		{
-			break;
-		}
-		fseek(file, amount * 20, SEEK_SET);
-		fwrite(manage[amount], 20, 1, file);
-	}
-	fclose(file);
-	file = 0;
 }

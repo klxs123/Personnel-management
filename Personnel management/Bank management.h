@@ -24,19 +24,19 @@ typedef struct _Node
 }Node, *NodePtr;
 
 int updateData(NodePtr node,char[], bool);
-int enterChoice(bool);                   //输出界面用来选择
 int deleteRecord(NodePtr *, bool);
-int login_read_information(char[][20]);
-int Login_Enterchoice(void);
+int login_read_information(NodePtr ,char[][20]);
 int login_accountdata(char manage[][20], char*);
-int login_passworddata(char[], char[]);
 int Login_system(char[][20]);
+int enterChoice(bool);                   //输出界面用来选择
+int Login_Enterchoice(void);
+int newRecord(NodePtr *, char[][20], bool);
+int Data_synchronization(char[][20], NodePtr);
 void Enquiries_Data(NodePtr);
-void Data_synchronization(char[][20], NodePtr);
 void Print_all_Data(Node *, char[], bool);
-void newRecord(NodePtr *, char[][20], bool);
 void Writedata(Node *, char manage[][20]);
 void Print_updated_information(NodePtr);
+NodePtr Get_ordinary_newdata(NodePtr);
 NodePtr Get_newdata(void);
 NodePtr Read_Saved_information(NodePtr *, char[][20]);
 NodePtr return_data(Node *);
