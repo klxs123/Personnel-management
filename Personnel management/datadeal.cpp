@@ -2,17 +2,36 @@
 
 static int INITIAL_ACCOUNT = 1000; 
 
-Node* Get_newdata(void)  //管理员获取新账户信息
+Node* Get_newdata(void)									 //管理员获取新账户信息
 {
 	Node* account = (Node*)malloc(sizeof(Node));
 	memset(account, 0, sizeof(Node));
-	fputs("Please input AcctNum,Name,Password,Banance:\n-->", stdout);
-	scanf("%d%s%s%lf", &account->acctNum, account->data.Name,
-		account->password, &account->data.balance);
+	char cache_account[10] = { 0 };
+	while (1)
+	{
+		fputs("Please input AcctNum:\n--> ", stdout);
+		scanf("%s", cache_account);
+		int len = 0;
+		for (len ; len < strlen(cache_account); len++)
+		{
+			if ((int)cache_account[len] < 48 || (int)cache_account[len] > 57)
+			{
+				fputs("			Input Error!\n", stdout);
+				break;
+			}
+		}
+		if (len >= strlen(cache_account))
+		{
+			account->acctNum = atoi(cache_account);
+			break;
+		}
+	}
+	fputs("Please input Name, Password, Balance:\n--> ", stdout);
+	scanf("%s%s%lf", account->data.Name,account->password, &account->data.balance);
 	return account;
 }
 
-Node* Get_ordinary_newdata(NodePtr pNode) //创建普通账户
+Node* Get_ordinary_newdata(NodePtr pNode)				//创建普通账户
 {
 	Node* account = (Node*)malloc(sizeof(Node));
 	memset(account, 0, sizeof(Node));
@@ -22,7 +41,7 @@ Node* Get_ordinary_newdata(NodePtr pNode) //创建普通账户
 		recordIndex(pNode, INITIAL_ACCOUNT);
 	}
 	printf("The current acquiescence account is %d !\n", INITIAL_ACCOUNT);
-	fputs("Please input Name and Password:\n-->", stdout);
+	fputs("Please input Name and Password:\n--> ", stdout);
 	scanf("%s%s", account->data.Name, account->password);
 	account->acctNum = INITIAL_ACCOUNT;
 	account->data.balance = 0;
@@ -50,7 +69,7 @@ int Data_synchronization(char manage[][20], NodePtr CarNode)  //信息同步到数组
 	return amount;
 }
 
-Node* recordIndex(Node* pNode, int account) //判断账户是否存在
+Node* recordIndex(Node* pNode, int account) 
 {
 	NodePtr findPtr = pNode;
 	while (findPtr)
@@ -234,7 +253,7 @@ int updateData(NodePtr node, char return_value[], bool Flag)
 	}
 }
 
-void Enquiries_Data(NodePtr header) // 查询账户
+void Enquiries_Data(NodePtr header)					// 查询账户
 {
 	NodePtr findPtr = header;
 	int faccount = 0;

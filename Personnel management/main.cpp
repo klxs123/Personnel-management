@@ -6,72 +6,65 @@ int main()
 {
 	NodePtr header = 0;
 	char manage[MAX_MANAGE][20] = { 0 };
-	Read_Saved_information(&header, manage); 
-	login_read_information(header, manage);
+	Read_Saved_information(&header);					//读入所有账号信息
+	Write_array_information(header, manage);			//同步信息到字符数组
 	int choice = 0;
 	while (1)
 	{
 		int return_value = Login_system(manage);
-		if (return_value == -1) //创建普通账户
+		if (return_value == -1)						//创建默认账号的账户
 		{
 			return_value = newRecord(&header, manage, FLAG);
 		}
-		if (return_value == 0) // 退出账户
+		if (return_value == 0)
 		{
-			break;
+			return 0;
 		}
 		while (choice = enterChoice(FLAG))
 		{
 
 			switch (choice)
 			{
-			case 1:
-				if (0 == FLAG)
-				{
-					updateData(header, manage[return_value], FLAG);
+				case 1:
+					if (0 == FLAG)
+					{
+						updateData(header, manage[return_value], FLAG);
+						break;
+					}
+					newRecord(&header, manage, FLAG);
 					break;
-				}
-				newRecord(&header, manage, FLAG);
-				break;
-			case 2:
-				if (0 == FLAG)
-				{
-					Print_all_Data(header, manage[return_value], FLAG);
+				case 2:
+					if (0 == FLAG)
+					{
+						Print_all_Data(header, manage[return_value], FLAG);
+						break;
+					}
+					updateData(header, 0, FLAG);
 					break;
-				}
-				updateData(header, 0, FLAG);
-				break;
-			case 3:
-				if (0 == FLAG)
-				{
+				case 3:
+					if (0 == FLAG)
+					{
+						Writedata(header, manage);
+						break;
+					}
+					deleteRecord(&header, FLAG);
+					break;
+				case 4:
+					Print_all_Data(header, 0, FLAG);
+					break;
+				case 5:
+					Enquiries_Data(header);
+					break;
+				case 6:
 					Writedata(header, manage);
 					break;
-				}
-				deleteRecord(&header, FLAG);
-				break;
-			case 4:
-				if (0 == FLAG)
+				default:
 					break;
-				Print_all_Data(header, 0, FLAG);
-				break;
-			case 5:
-				if (0 == FLAG)
-					break;
-				Enquiries_Data(header);
-				break;
-			case 6:
-				if (header)
-				{
-					Writedata(header, manage);
-				}
-				break;
-			default:
+			}
+			if ((choice == 6) || (choice == 3 && FLAG == 0))
+			{
 				break;
 			}
-			if (choice == 6)
-				break;
-			if (choice == 3 && FLAG == 0)
-				break;
 		}
 	}
 	return 0;
@@ -124,49 +117,6 @@ int Login_system(char manage_data[][20])
 	}
 }
 
-
-Node* Read_Saved_information(NodePtr* ppNode, char manage[][20])
-{
-	FILE* file = fopen("D:\\github Project\\Personnel management\\Data.dat", "r+");
-	int count_seek = 1;
-	int amount = 1;
-	fseek(file, 0, SEEK_SET);
-	NodePtr pNode = (Node*)malloc(sizeof(Node));
-	memset(pNode, 0, sizeof(Node));
-	int ret = fread(pNode, sizeof(Node), 1, file);
-	if (ret == 0)
-	{
-		free(pNode);
-		pNode = 0;
-		return 0;
-	}
-	else
-	{
-		*ppNode = pNode;
-	}
-	NodePtr pCarNode = *ppNode;
-	while (feof(file) != EOF)
-	{
-		NodePtr pNewNode = (Node*)malloc(sizeof(Node));
-		memset(pNewNode, 0, sizeof(Node));
-		pNewNode->next = pCarNode->next;
-		pCarNode->next = pNewNode;
-		pCarNode = pNewNode;
-			
-		fread(pCarNode, sizeof(Node), 1, file);
-		if (pCarNode->acctNum == 0)
-		{
-			return 0;
-		}
-		_itoa(pCarNode->acctNum, manage[amount], 10);
-		strcpy(manage[amount + 1], pCarNode->password);
-		fseek(file, count_seek * sizeof(Node), SEEK_SET);
-		count_seek++;
-		amount++;
-	}
-	fclose(file);
-	return 0;
-}
 
 void Writedata(Node* header, char manage[][20])
 {

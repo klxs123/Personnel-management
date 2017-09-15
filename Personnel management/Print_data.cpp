@@ -13,7 +13,8 @@ void Print_updated_information(NodePtr findPtr)
 }
 int enterChoice(bool flag)
 {
-	int menuChoice;
+	int menuChoice; 
+	char cache[10] = { 0 };
 	while (1)
 	{
 		if (1 == flag)
@@ -43,11 +44,19 @@ int enterChoice(bool flag)
 				"		* * * * * * * * * * * * * * * * * * * * *\n--> "
 			);
 		}
-		if (scanf("%d", &menuChoice) == 1)
+		scanf("%s", cache); 
+		if (strlen(cache) > 1) //判断输入是否有误
 		{
-			if (menuChoice <= 6 && menuChoice >= 1)
-			return menuChoice;
+			;
 		}
+		else
+		{
+			menuChoice = (int)cache[0] - 48;
+			if ((1 == flag && menuChoice <= 6 && menuChoice >= 1) || 
+				(0 == flag && menuChoice <= 3 && menuChoice >= 1))
+				return menuChoice;
+		}
+		fputs("			Input Error!\n",stdout);
 		getchar();
 	}
 }
@@ -55,6 +64,7 @@ int enterChoice(bool flag)
 NodePtr changechoice(NodePtr findPtr, bool Flag)
 {
 	int choice = -1;
+	char cache[10] = { 0 };
 	double balance = 0;
 	while (choice != 0)
 	{
@@ -83,19 +93,28 @@ NodePtr changechoice(NodePtr findPtr, bool Flag)
 				"		* * * * * * * * * * * * * * * * * * * * *\n--> "
 			);
 		}
-		if (scanf("%d", &choice) == 1)
+		scanf("%s", cache);
+		if (strlen(cache) > 1)
 		{
-			if (choice <= 3 && choice >= 1)
-			;
+			choice = 4;
 		}
 		else
 		{
-			getchar();
-			break;
+			choice = (int)cache[0] - 48;
+			if (choice <= 3 && choice >= 0)
+				;
+			else
+			{
+				getchar();
+				choice = 4;
+			}
 		}
 		double Balance = 0;// 判断余额取出之后是否为负
 		switch (choice)
 		{
+		case 0:
+			fputs("			Program exits!\n", stdout);
+			break;
 		case 1:
 			fputs("Input name:\n-->", stdout);
 			scanf("%s", findPtr->data.Name);
@@ -110,13 +129,13 @@ NodePtr changechoice(NodePtr findPtr, bool Flag)
 			Balance = findPtr->data.balance+balance;
 			if (Balance < 0)
 			{
-				fputs("Lack of balance!\n",stdout);
+				fputs("			Lack of balance!\n",stdout);
 				break;
 			}
 			findPtr->data.balance += balance;
 			break;
 		default:
-			fputs("Input Error!\n", stdout);
+			fputs("			Input Error!\n", stdout);
 			break;
 		}
 	}
@@ -125,6 +144,7 @@ NodePtr changechoice(NodePtr findPtr, bool Flag)
 
 int Login_Enterchoice(void)
 {
+	char cache[10] = { 0 };
 	int choice = 0;
 	while (1)
 	{
@@ -140,11 +160,18 @@ int Login_Enterchoice(void)
 		printf(
 			"	    |___________________________________________________|\n--> "
 		);
-		if (scanf("%d", &choice) == 1)
+		scanf("%s", cache);
+		if (strlen(cache) > 1)
 		{
-			if(choice <= 3 && choice >= 1)
-			return choice;
+			;
 		}
+		else
+		{
+			choice = (int)cache[0] - 48;
+		}
+		if(choice <= 3 && choice >= 1)
+			return choice;
+		fputs("				Input Error!\n", stdout);
 		getchar();
 	}
 }

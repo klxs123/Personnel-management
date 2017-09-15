@@ -25,7 +25,7 @@ typedef struct _Node
 
 int updateData(NodePtr node,char[], bool);
 int deleteRecord(NodePtr *, bool);
-int login_read_information(NodePtr ,char[][20]);
+int Write_array_information(NodePtr ,char[][20]);
 int login_accountdata(char manage[][20], char*);
 int Login_system(char[][20]);
 int enterChoice(bool);                   //输出界面用来选择
@@ -38,7 +38,7 @@ void Writedata(Node *, char manage[][20]);
 void Print_updated_information(NodePtr);
 NodePtr Get_ordinary_newdata(NodePtr);
 NodePtr Get_newdata(void);
-NodePtr Read_Saved_information(NodePtr *, char[][20]);
+NodePtr Read_Saved_information(NodePtr *);
 NodePtr return_data(Node *);
 NodePtr recordIndex(Node *, int);
 NodePtr changechoice(NodePtr, bool);

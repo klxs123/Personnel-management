@@ -1,7 +1,7 @@
 #include "Bank management.h"
 
 
-int login_read_information(NodePtr pNode, char manage[][20]) //¶ÁÈëÕËºÅÃÜÂë
+int Write_array_information(NodePtr pNode, char manage[][20]) //Ð´ÈëÕËºÅÃÜÂëµ½Êý×é
 {
 	strcpy(manage[0], ADMIN_ACCOUNT);
 	strcpy(manage[1], ADMIIN_PASSWORD);
@@ -25,15 +25,17 @@ int login_read_information(NodePtr pNode, char manage[][20]) //¶ÁÈëÕËºÅÃÜÂë
 
 int login_accountdata(char managedata[][20], char* input_manage_data)
 {
-	int count_password = 3;
 	char login_password[10] = { 0 };
-	if (strcmp(input_manage_data, ADMIN_ACCOUNT) == 0)
+	int count_password = 3;
+	int  count_array = 0;
+	if (strcmp(input_manage_data, managedata[count_array]) == 0)
 	{
+		count_array = 1;
 		while (count_password > 0)
 		{
 			printf("Please Input Password,surplus %d chances!\n--> ", count_password);
 			scanf("%s", login_password);
-			if (strcmp(login_password, ADMIIN_PASSWORD) == 0)
+			if (strcmp(login_password, managedata[count_array]) == 0)
 				return 1;
 			count_password--;
 		}
@@ -65,3 +67,41 @@ int login_accountdata(char managedata[][20], char* input_manage_data)
 	}
 }
 
+Node* Read_Saved_information(NodePtr* ppNode)
+{
+	FILE* file = fopen("D:\\github Project\\Personnel management\\Data.dat", "r+");
+	int count_seek = 1;
+	fseek(file, 0, SEEK_SET);
+	NodePtr pNode = (Node*)malloc(sizeof(Node));
+	memset(pNode, 0, sizeof(Node));
+	int ret = fread(pNode, sizeof(Node), 1, file);
+	if (ret == 0)								// Êý¾ÝÎª¿Õ
+	{
+		free(pNode);
+		pNode = 0;
+		return 0;
+	}
+	else
+	{
+		*ppNode = pNode;
+	}
+	NodePtr pCarNode = *ppNode;
+	while (feof(file) != EOF)
+	{
+		NodePtr pNewNode = (Node*)malloc(sizeof(Node));
+		memset(pNewNode, 0, sizeof(Node));
+		pNewNode->next = pCarNode->next;
+		pCarNode->next = pNewNode;
+		pCarNode = pNewNode;
+
+		fread(pCarNode, sizeof(Node), 1, file);
+		if (pCarNode->acctNum == 0)
+		{
+			return 0;
+		}
+		fseek(file, count_seek * sizeof(Node), SEEK_SET);
+		count_seek++;
+	}
+	fclose(file);
+	return 0;
+}
