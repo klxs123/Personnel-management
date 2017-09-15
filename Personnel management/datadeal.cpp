@@ -2,7 +2,7 @@
 
 static int INITIAL_ACCOUNT = 1000; 
 
-Node* Get_newdata(void)									 //管理员获取新账户信息
+Node* Get_newdata(void)  //管理员获取新账户信息
 {
 	Node* account = (Node*)malloc(sizeof(Node));
 	memset(account, 0, sizeof(Node));
@@ -12,7 +12,7 @@ Node* Get_newdata(void)									 //管理员获取新账户信息
 		fputs("Please input AcctNum:\n--> ", stdout);
 		scanf("%s", cache_account);
 		int len = 0;
-		for (len ; len < strlen(cache_account); len++)
+		for (len; len < strlen(cache_account); len++)
 		{
 			if ((int)cache_account[len] < 48 || (int)cache_account[len] > 57)
 			{
@@ -27,7 +27,7 @@ Node* Get_newdata(void)									 //管理员获取新账户信息
 		}
 	}
 	fputs("Please input Name, Password, Balance:\n--> ", stdout);
-	scanf("%s%s%lf", account->data.Name,account->password, &account->data.balance);
+	scanf("%s%s%lf", account->data.Name, account->password, &account->data.balance);
 	return account;
 }
 
@@ -38,7 +38,6 @@ Node* Get_ordinary_newdata(NodePtr pNode)				//创建普通账户
 	while (recordIndex(pNode, INITIAL_ACCOUNT))
 	{
 		INITIAL_ACCOUNT++;
-		recordIndex(pNode, INITIAL_ACCOUNT);
 	}
 	printf("The current acquiescence account is %d !\n", INITIAL_ACCOUNT);
 	fputs("Please input Name and Password:\n--> ", stdout);
@@ -47,40 +46,11 @@ Node* Get_ordinary_newdata(NodePtr pNode)				//创建普通账户
 	account->data.balance = 0;
 	fprintf(stdout, "%-12s%-12s%-12s%-10s\n",
 		"AcctNum", "Name", "Password", "Balance");
-	printf("%-12d%-12s%-12s%-10.2f\n",
+	printf("%-12d%-12s%-12s%-10.2lf\n",
 		account->acctNum, account->data.Name,
 		account->password, account->data.balance);
 	INITIAL_ACCOUNT++;
 	return account;
-}
-
-int Data_synchronization(char manage[][20], NodePtr CarNode)  //信息同步到数组
-{
-	int amount;
-	for (amount = 2; amount <= MAX_MANAGE; amount++)
-	{
-		if (manage[amount][0] == 0)
-		{
-			break;
-		}
-	}
-	_itoa(CarNode->acctNum, manage[amount], 10);
-	strcpy(manage[amount + 1], CarNode->password);
-	return amount;
-}
-
-Node* recordIndex(Node* pNode, int account) 
-{
-	NodePtr findPtr = pNode;
-	while (findPtr)
-	{
-		if (findPtr->acctNum == account)
-		{
-			return findPtr;
-		}
-		findPtr = findPtr->next;
-	}
-	return 0;
 }
 
 int newRecord(NodePtr *nodeptr, char manage[][20], bool Flag)
@@ -124,6 +94,63 @@ int newRecord(NodePtr *nodeptr, char manage[][20], bool Flag)
 	CarNode->data.balance = Data->data.balance;
 	return_value = Data_synchronization(manage, CarNode);
 	return return_value;
+}
+
+int updateData(NodePtr node, char return_value[], bool Flag)
+{
+	int account = 0;
+	if (return_value)
+	{
+		account = atoi(return_value);
+	}
+	double balance = 0;
+	NodePtr findPtr = node;
+	if (1 == Flag)
+	{
+		printf("Enter account to update : ");
+		scanf("%d", &account);
+	}
+	if (findPtr = recordIndex(findPtr, account))
+	{
+		Print_updated_information(findPtr);
+		findPtr = changechoice(findPtr, Flag);
+		Print_updated_information(findPtr);
+		return 0;
+	}
+	else
+	{
+		printf("Acount #%d has no information.\n", account);
+		return 0;
+	}
+}
+
+int Data_synchronization(char manage[][20], NodePtr CarNode)  //信息同步到数组
+{
+	int amount;
+	for (amount = 2; amount <= MAX_MANAGE; amount++)
+	{
+		if (manage[amount][0] == 0)
+		{
+			break;
+		}
+	}
+	_itoa(CarNode->acctNum, manage[amount], 10);
+	strcpy(manage[amount + 1], CarNode->password);
+	return amount;
+}
+
+Node* recordIndex(Node* pNode, int account) 
+{
+	NodePtr findPtr = pNode;
+	while (findPtr)
+	{
+		if (findPtr->acctNum == account)
+		{
+			return findPtr;
+		}
+		findPtr = findPtr->next;
+	}
+	return 0;
 }
 
 int deleteRecord(NodePtr *ppNode, bool Flag)
@@ -222,34 +249,6 @@ void Print_all_Data(Node* data, char return_value[], bool Flag)
 			}
 		}
 		findPtr = findPtr->next;
-	}
-}
-
-int updateData(NodePtr node, char return_value[], bool Flag)
-{
-	int account = 0;
-	if (return_value)
-	{
-		account = atoi(return_value);
-	}
-	double balance = 0;
-	NodePtr findPtr = node;
-	if (1 == Flag)
-	{
-		printf("Enter account to update : ");
-		scanf("%d", &account);
-	}
-	if (findPtr = recordIndex(findPtr, account))
-	{
-		Print_updated_information(findPtr);
-		findPtr = changechoice(findPtr, Flag);
-		Print_updated_information(findPtr);
-		return 0;
-	}
-	else
-	{
-		printf("Acount #%d has no information.\n", account);
-		return 0;
 	}
 }
 

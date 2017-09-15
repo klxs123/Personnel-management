@@ -117,11 +117,28 @@ int Login_system(char manage_data[][20])
 	}
 }
 
+void To_heavy(NodePtr header)
+{
+	NodePtr findPtr = header;
+	NodePtr pNode = 0;
+	while (findPtr->next != 0)
+	{
+		 pNode = findPtr;
+		findPtr = findPtr->next;
+		if (pNode->acctNum == findPtr->acctNum)
+		{
+			pNode->next = findPtr->next;
+			free(findPtr);
+			findPtr = pNode;
+		}
+	}
+}
 
 void Writedata(Node* header, char manage[][20])
 {
 	FILE* file = fopen("D:\\github Project\\Personnel management\\Data.dat", "w+");
 	NodePtr writedataPtr = header;
+	To_heavy(header);
 	int seek_count = 0;
 	while (writedataPtr != 0)
 	{
