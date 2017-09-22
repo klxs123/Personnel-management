@@ -2,6 +2,8 @@
 #include <cstdbool>
 #include <cstring>
 #include <stdlib.h>
+#include <my_global.h>
+#include <mysql.h>
 #define ture 1
 #define false 0
 
@@ -23,23 +25,25 @@ typedef struct _Node
 	struct _Node* next;
 }Node, *NodePtr;
 
-int enterChoice(bool);                   //输出界面用来选择
+int EnterChoice(bool);                   //输出界面用来选择
 int Login_Enterchoice(void);
 int Login_system(char[][20]);
 int deleteRecord(NodePtr *, bool);
 int updateData(NodePtr node,char[], bool);
 int newRecord(NodePtr *, char[][20], bool);
+int Creat_node(NodePtr* ppNode, Node Data);
 int Data_synchronization(char[][20], NodePtr);
 int Write_array_information(NodePtr ,char[][20]);
 int login_accountdata(char manage[][20], char*);
-//void To_heavy(NodePtr);
+void Creat_database();
 void Enquiries_Data(NodePtr);
+void finish_with_error(MYSQL *con);
 void Print_updated_information(NodePtr);
+NodePtr Read_Saved_information(NodePtr *);
 void Print_all_Data(Node *, char[], bool);
-void Writedata(Node *, char manage[][20]);
+void Writedata(Node *);
 NodePtr Get_newdata(void);
 NodePtr return_data(Node *);
 NodePtr recordIndex(Node *, int);
 NodePtr changechoice(NodePtr, bool);
 NodePtr Get_ordinary_newdata(NodePtr);
-NodePtr Read_Saved_information(NodePtr *);

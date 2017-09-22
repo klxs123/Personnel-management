@@ -236,7 +236,7 @@ void Print_all_Data(Node* data, char return_value[], bool Flag)
 		{
 			printf("%-12d%-12s%-12s%-10.2f\n",
 				findPtr->acctNum, findPtr->data.Name,
-				findPtr->password, findPtr->data.balance);
+				"******", findPtr->data.balance);
 		}
 		else
 		{
@@ -273,3 +273,4 @@ void Enquiries_Data(NodePtr header)					// ≤È—Ø’Àªß
 	}
 	fputs("This account has no information!\n", stdout);
 }
+

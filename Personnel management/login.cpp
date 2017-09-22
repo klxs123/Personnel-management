@@ -65,46 +65,90 @@ int login_accountdata(char manage[][20], char* input_manage_data)
 			}
 		}
 	}
+	return 0;
 }
 
-Node* Read_Saved_information(NodePtr* ppNode)
+int Creat_node(NodePtr* ppNode, Node Data)
 {
-	FILE* file = fopen("D:\\github Project\\Personnel management\\Data.dat", "r+");
-	int count_seek = 1;
-	fseek(file, 0, SEEK_SET);
-	NodePtr pNode = (Node*)malloc(sizeof(Node));
-	memset(pNode, 0, sizeof(Node));
-	int ret = fread(pNode, sizeof(Node), 1, file);
-	if (ret == 0)								// 数据为空
+	NodePtr CarNode = *ppNode;
+	if (*ppNode == 0)
 	{
-		free(pNode);
-		pNode = 0;
-		return 0;
+		//信息为空
+		*ppNode = (Node*)malloc(sizeof(Node));
+		memset(*ppNode, 0, sizeof(Node));
+		CarNode = *ppNode;
 	}
 	else
 	{
-		*ppNode = pNode;
-	}
-	NodePtr pCarNode = *ppNode;
-	while (feof(file) != EOF)
-	{
-		NodePtr pNewNode = (Node*)malloc(sizeof(Node));
+		Node* pNewNode = (Node*)malloc(sizeof(Node));
 		memset(pNewNode, 0, sizeof(Node));
-		pNewNode->next = pCarNode->next;
-		pCarNode->next = pNewNode;
-		pCarNode = pNewNode;
-
-		int ret = fread(pCarNode, sizeof(Node), 1, file);
-		if (ret != 1)
-			break;
-		if (pCarNode->acctNum == 0)
-		{
-			return 0;
-		}
-		fseek(file, count_seek * sizeof(Node), SEEK_SET);
-		count_seek++;
+		pNewNode->next = CarNode;
+		*ppNode = pNewNode;
+		CarNode = pNewNode;
 	}
-	fclose(file);
-	//To_heavy(*ppNode);
+	CarNode->acctNum = Data.acctNum;
+	strcpy(CarNode->password, Data.password);
+	strcpy(CarNode->data.Name, Data.data.Name);
+	CarNode->data.balance = Data.data.balance;
+	return 0;
+}
+
+NodePtr Read_Saved_information(NodePtr* ppNode)
+{
+	MYSQL *con = mysql_init(NULL);
+	Node Data = { 0 };
+	if (mysql_real_connect(con, "127.0.0.1", "root", "123qwe",
+		"Bank", 0, NULL, 0) == NULL)
+	{
+		finish_with_error(con);
+	}
+
+	if (con == NULL)
+	{
+		fprintf(stderr, "mysql_init() failed\n");
+		exit(1);
+	}
+
+	if (mysql_query(con, "SELECT * FROM Information LIMIT 0,3"))
+	{
+		finish_with_error(con);
+	}
+
+	MYSQL_RES *result = mysql_store_result(con);
+
+	if (result == NULL)
+	{
+		finish_with_error(con);
+	}
+
+	//int num_fields = mysql_num_fields(result); //获取列的个数
+	int num_fields = 4;
+	MYSQL_ROW row;
+	MYSQL_FIELD *field;
+
+	while ((row = mysql_fetch_row(result)))
+	{
+		for (int i = 0; i < num_fields; i++)
+		{
+			switch (i)
+			{
+			case 0:
+				Data.acctNum = atoi(row[i]);
+				break;
+			case 1:
+				strcpy(Data.data.Name, row[i]);
+				break;
+			case 2:
+				strcpy(Data.password, row[i]);
+				break;
+			case 3:
+				Data.data.balance = atof(row[i]);
+				break;
+			}
+		}
+		Creat_node(ppNode, Data);
+	}
+	mysql_free_result(result);
+	mysql_close(con);
 	return 0;
 }

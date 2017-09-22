@@ -11,7 +11,7 @@ void Print_updated_information(NodePtr findPtr)
 			findPtr->password, findPtr->data.balance);
 	}
 }
-int enterChoice(bool flag)
+int EnterChoice(bool flag)
 {
 	int menuChoice; 
 	char cache[10] = { 0 };

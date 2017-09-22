@@ -8,6 +8,7 @@ int main()
 	char manage[MAX_MANAGE][20] = { 0 };
 	Read_Saved_information(&header);					//读入所有账号信息
 	Write_array_information(header, manage);			//同步信息到字符数组
+	Creat_database();
 	int choice = 0;
 	while (1)
 	{
@@ -20,7 +21,7 @@ int main()
 		{
 			return 0;
 		}
-		while (choice = enterChoice(FLAG))
+		while (choice = EnterChoice(FLAG))
 		{
 
 			switch (choice)
@@ -44,7 +45,7 @@ int main()
 				case 3:
 					if (0 == FLAG)
 					{
-						Writedata(header, manage);
+						Writedata(header);
 						break;
 					}
 					deleteRecord(&header, FLAG);
@@ -56,7 +57,7 @@ int main()
 					Enquiries_Data(header);
 					break;
 				case 6:
-					Writedata(header, manage);
+					Writedata(header);
 					break;
 				default:
 					break;
@@ -117,37 +118,86 @@ int Login_system(char manage_data[][20])
 	}
 }
 
-//void To_heavy(NodePtr header)
-//{
-//	NodePtr findPtr = header;
-//	NodePtr pNode = 0;
-//	while (findPtr->next != 0)
-//	{
-//		pNode = findPtr;
-//		findPtr = findPtr->next;
-//		if (pNode->acctNum == findPtr->acctNum)
-//		{
-//			pNode->next = findPtr->next;
-//			free(findPtr);
-//			findPtr = pNode;
-//		}
-//	}
-//}
-
-void Writedata(Node* header, char manage[][20])
+void finish_with_error(MYSQL *con)
 {
-	FILE* file = fopen("D:\\github Project\\Personnel management\\Data.dat", "w+");
+	fprintf(stderr, "%s\n", mysql_error(con));
+	mysql_close(con);
+	exit(1);
+}
+
+
+void Writedata(Node* header)
+{
 	NodePtr writedataPtr = header;
-	//To_heavy(header);
-	int seek_count = 0;
+	int write_count = 0;
+	FLAG = 0;
+	MYSQL *con = mysql_init(NULL);
+	if (con == NULL)
+	{
+		fprintf(stderr, "%s\n", mysql_error(con));
+		exit(1);
+	}
+
+	if (mysql_real_connect(con, "127.0.0.1", "root", "123qwe",
+		"Bank", 0, NULL, 0) == NULL)
+	{
+		finish_with_error(con);
+	}
+
+	if (mysql_query(con, "DROP TABLE IF EXISTS Information"))
+	{
+		finish_with_error(con);
+	}
+
+	if (mysql_query(con,
+		"CREATE TABLE Information(Account INT, Name TEXT, Password TEXT, Balance DOUBLE)"))
+	{
+		finish_with_error(con);
+	}
+
+	char *cache = (char*)malloc(100);
+	memset(cache, 0, 100);
 	while (writedataPtr != 0)
 	{
-		fseek(file, 0, SEEK_END);
-		fwrite(writedataPtr, sizeof(Node), 1, file);
+		sprintf(cache, "INSERT INTO Information VALUES('%d','%s','%s','%lf')",
+			writedataPtr->acctNum, writedataPtr->data.Name,
+			writedataPtr->password, writedataPtr->data.balance);
+		if (mysql_query(con, cache))
+		{
+			finish_with_error(con);
+		}
 		writedataPtr = writedataPtr->next;
-		seek_count++;
 	}
-	fclose(file);
-	file = 0;
-	FLAG = 0;
+	free(cache);
+	mysql_close(con);
+	return;
+}
+
+void Creat_database()
+{
+	MYSQL *con = mysql_init(NULL);
+
+	if (con == NULL)
+	{
+		fprintf(stderr, "%s\n", mysql_error(con));
+		exit(1);
+	}
+
+	if (mysql_real_connect(con, "127.0.0.1", "root", "123qwe",
+		NULL, 0, NULL, 0) == NULL)
+	{
+		fprintf(stderr, "%s\n", mysql_error(con));
+		mysql_close(con);
+		exit(1);
+	}
+
+	if (mysql_query(con, "CREATE DATABASE Bank"))
+	{
+		fprintf(stderr, "%s\n", mysql_error(con));
+		mysql_close(con);
+		return ;
+	}
+	fputs("Database creat successful!\n", stdout);
+	mysql_close(con);
+	return ;
 }
