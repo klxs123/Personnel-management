@@ -63,7 +63,7 @@ int EnterChoice(bool flag)
 	}
 }
 
-NodePtr changechoice(NodePtr findPtr, bool Flag)
+NodePtr changechoice(NodePtr findPtr, bool Flag, int account)
 {
 	int choice = -1;
 	char cache[10] = { 0 };
@@ -141,6 +141,7 @@ NodePtr changechoice(NodePtr findPtr, bool Flag)
 			break;
 		}
 	}
+	deal_database(findPtr, 3, 0);
 	return findPtr;
 }
 

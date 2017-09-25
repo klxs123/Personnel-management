@@ -48,7 +48,6 @@ int main()
 				case 3:
 					if (0 == FLAG)
 					{
-						Writedata(header);
 						break;
 					}
 					deleteRecord(&header, FLAG);
@@ -69,7 +68,6 @@ int main()
 				case 7:
 				{
 					FLAG = 0;
-					Writedata(header);
 				}
 					break;
 				default:
@@ -130,60 +128,7 @@ int Login_system(char manage_data[][20])
 		}
 		FLAG = 0;
 	}
-}
-
-void Writedata(Node* header)
-{
-	;
-}
-
-//void Writedata(Node* header)
-//{
-//	NodePtr writedataPtr = header;
-//	int write_count = 0;
-//
-//	if (mysql_query(con, "DROP TABLE IF EXISTS Information"))
-//	{
-//		finish_with_error(con);
-//	}
-//
-//	if (mysql_query(con,
-//		"CREATE TABLE Information(Account INT, Name TEXT, Password TEXT, Balance DOUBLE)"))
-//	{
-//		finish_with_error(con);
-//	}
-//
-//	char *cache = (char*)malloc(100);
-//	memset(cache, 0, 100);
-//	while (writedataPtr != 0)
-//	{
-//		sprintf(cache, "INSERT INTO Information VALUES('%d','%s','%s','%lf')",
-//			writedataPtr->acctNum, writedataPtr->data.Name,
-//			writedataPtr->password, writedataPtr->data.balance);
-//		if (mysql_query(con, cache))
-//		{
-//			finish_with_error(con);
-//		}
-//		writedataPtr = writedataPtr->next;
-//	}
-//	free(cache);
-//	return;
-//}
-
-void creat_new_record(NodePtr data)
-{
-	char *cache = (char*)malloc(50);
-	memset(cache, 0, 50);
-
-	sprintf(
-		cache,"INSERT INTO Information VALUES('%d','%s','%s','%lf')",
-		data->acctNum, data->data.Name, 
-		data->password, data->data.balance);
-
-	if (mysql_query(con, cache))
-	{
-		finish_with_error(con);
-	}
+	free(login_account);
 }
 
 void connect_database()
@@ -194,4 +139,37 @@ void connect_database()
 	{
 		finish_with_error(con);
 	}
+}
+
+void deal_database(NodePtr data, int flag, int account)
+{
+	char *cache = (char*)malloc(256);
+	memset(cache, 0, 256);
+
+	switch (flag)
+	{
+	case 1:
+		sprintf(
+			cache, "INSERT INTO Information VALUES('%d','%s','%s','%lf')",
+			data->acctNum, data->data.Name,
+			data->password, data->data.balance);
+		break;
+	case 2:
+		sprintf(
+			cache, "delete from Information where Account = '%d'", account);
+		break;
+	case 3:
+		sprintf(
+			cache, "update Information set Name = '%s',Password = '%s',Balance = '%lf' where Account = %d",
+			data->data.Name, data->password, data->data.balance, data->acctNum);
+		break;
+	default :
+		fputs("Input error!\n", stdout);
+		break;
+	}
+	if (mysql_query(con, cache))
+	{
+		finish_with_error(con);
+	}
+	free(cache);
 }

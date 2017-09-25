@@ -94,7 +94,7 @@ int newRecord(NodePtr *nodeptr, char manage[][20], bool Flag)
 		*nodeptr = pNewNode;
 		CarNode = pNewNode;
 	}
-	creat_new_record(Data);
+	deal_database(Data,1,0);
 	CarNode->acctNum = Data->acctNum;
 	strcpy(CarNode->password, Data->password);
 	strcpy(CarNode->data.Name, Data->data.Name);
@@ -120,7 +120,7 @@ int updateData(NodePtr node, char return_value[], bool Flag)
 	if (findPtr = recordIndex(findPtr, account))
 	{
 		Print_updated_information(findPtr);
-		findPtr = changechoice(findPtr, Flag);
+		findPtr = changechoice(findPtr, Flag, account);
 		Print_updated_information(findPtr);
 		return 0;
 	}
@@ -177,6 +177,7 @@ int deleteRecord(NodePtr *ppNode, bool Flag)
 	}
 	NodePtr pNode = *ppNode;
 	NodePtr preNode = 0;
+	deal_database(0, 2, accountNum);
 	while (pNode->next != 0)
 	{
 		if (pNode->acctNum == accountNum)
