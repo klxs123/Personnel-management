@@ -20,28 +20,30 @@ int EnterChoice(bool flag)
 		if (1 == flag)
 		{
 			printf(
-				"		* * * * * * * * * * * * * * * * * * * * * \n"
-				"		*           Enter Your Choice           * \n"
-				"		*---------------------------------------* \n"
-				"		*         1 - add an account            * \n"
-				"		*         2 - updata a account          * \n"
-				"		*         3 - delete an account         * \n"
-				"		*         4 - print all accounts        * \n"
-				"		*         5 - seek Specify the account  * \n"
-				"		*         6 - end program and save      * \n"
-				"		* * * * * * * * * * * * * * * * * * * * *\n--> "
+				"		* * * * * * * * * * * * * * * * * * * * * * * \n"
+				"		*           Enter Your Choice               * \n"
+				"		*-------------------------------------------* \n"
+				"		*         1 - add an account                * \n"
+				"		*         2 - updata a account              * \n"
+				"		*         3 - delete an account             * \n"
+				"		*         4 - print all accounts            * \n"
+				"		*         5 - seek Specify the account      * \n"
+				"		*         6 - Output to the specified file  * \n"
+				"		*         7 - end program and save          * \n"
+				"		* * * * * * * * * * * * * * * * * * * * * * * \n--> "
 			);
 		}
 		else
 		{
 			printf(
-				"		* * * * * * * * * * * * * * * * * * * * *\n"
-				"		*           Enter your choice           *\n"
-				"		*---------------------------------------*\n"
-				"		*         1 - updata a account          *\n"
-				"		*         2 - print accounts            *\n"
-				"		*         3 - end program               *\n"
-				"		* * * * * * * * * * * * * * * * * * * * *\n--> "
+				"		* * * * * * * * * * * * * * * * * * * * * *\n"
+				"		*           Enter your choice             *\n"
+				"		*-----------------------------------------*\n"
+				"		*         1 - updata a account            *\n"
+				"		*         2 - print accounts              *\n"
+				"		*         3 - Output to file              *\n"
+				"		*         4 - end program                 *\n"
+				"		* * * * * * * * * * * * * * * * * * * * * *\n--> "
 			);
 		}
 		scanf("%s", cache); 
@@ -52,8 +54,8 @@ int EnterChoice(bool flag)
 		else
 		{
 			menuChoice = (int)cache[0] - 48;
-			if ((1 == flag && menuChoice <= 6 && menuChoice >= 1) || 
-				(0 == flag && menuChoice <= 3 && menuChoice >= 1))
+			if ((1 == flag && menuChoice <= 7 && menuChoice >= 1) || 
+				(0 == flag && menuChoice <= 4 && menuChoice >= 1))
 				return menuChoice;
 		}
 		fputs("			Input Error!\n",stdout);
@@ -126,13 +128,13 @@ NodePtr changechoice(NodePtr findPtr, bool Flag)
 		case 3:
 			fputs("Input change (+) or (-) balance: \n-->", stdout);
 			scanf("%lf", &balance);
-			Balance = findPtr->data.balance+balance;
-			if (Balance < 0)
+			balance += findPtr->data.balance;
+			if (balance < 0)
 			{
 				fputs("			Lack of balance!\n",stdout);
 				break;
 			}
-			findPtr->data.balance += balance;
+			findPtr->data.balance = balance;
 			break;
 		default:
 			fputs("			Input Error!\n", stdout);
@@ -174,4 +176,28 @@ int Login_Enterchoice(void)
 		fputs("				Input Error!\n", stdout);
 		getchar();
 	}
+}
+
+void OutputData(NodePtr header)
+{
+	NodePtr findPtr = header;
+	char* Filename = 0;
+	FILE* file = 0;
+	fputs("Please enter full path:", stdout);
+	scanf("%s", Filename);
+	if ((file = fopen(Filename, "r+")) == NULL)
+	{
+		file = fopen(Filename, "w+");
+	}
+	fprintf(file, "%-12s%-12s%-12s%-10s\n",
+		"AcctNum", "Name", "Password", "Balance");
+	while (findPtr != 0)
+	{
+		fprintf(file, "%-12d%-12s%-12s%-10.2f\n",
+			findPtr->acctNum, findPtr->data.Name,
+			findPtr->password, findPtr->data.balance);
+		fputs("\n", file);
+		findPtr = findPtr->next;
+	}
+	fclose(file);
 }

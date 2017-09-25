@@ -8,7 +8,7 @@ int main()
 	char manage[MAX_MANAGE][20] = { 0 };
 	Read_Saved_information(&header);					//读入所有账号信息
 	Write_array_information(header, manage);			//同步信息到字符数组
-	Creat_database();
+	//Creat_database();
 	int choice = 0;
 	while (1)
 	{
@@ -51,18 +51,28 @@ int main()
 					deleteRecord(&header, FLAG);
 					break;
 				case 4:
+					if (0 == FLAG)
+					{
+						OutputData(header);
+					}
 					Print_all_Data(header, 0, FLAG);
 					break;
 				case 5:
 					Enquiries_Data(header);
 					break;
 				case 6:
+					OutputData(header);
+					break;
+				case 7:
+				{
+					FLAG = 0;
 					Writedata(header);
+				}
 					break;
 				default:
 					break;
 			}
-			if ((choice == 6) || (choice == 3 && FLAG == 0))
+			if ((choice == 7) || (choice == 4 && FLAG == 0))
 			{
 				break;
 			}
@@ -118,86 +128,3 @@ int Login_system(char manage_data[][20])
 	}
 }
 
-void finish_with_error(MYSQL *con)
-{
-	fprintf(stderr, "%s\n", mysql_error(con));
-	mysql_close(con);
-	exit(1);
-}
-
-
-void Writedata(Node* header)
-{
-	NodePtr writedataPtr = header;
-	int write_count = 0;
-	FLAG = 0;
-	MYSQL *con = mysql_init(NULL);
-	if (con == NULL)
-	{
-		fprintf(stderr, "%s\n", mysql_error(con));
-		exit(1);
-	}
-
-	if (mysql_real_connect(con, "127.0.0.1", "root", "123qwe",
-		"Bank", 0, NULL, 0) == NULL)
-	{
-		finish_with_error(con);
-	}
-
-	if (mysql_query(con, "DROP TABLE IF EXISTS Information"))
-	{
-		finish_with_error(con);
-	}
-
-	if (mysql_query(con,
-		"CREATE TABLE Information(Account INT, Name TEXT, Password TEXT, Balance DOUBLE)"))
-	{
-		finish_with_error(con);
-	}
-
-	char *cache = (char*)malloc(100);
-	memset(cache, 0, 100);
-	while (writedataPtr != 0)
-	{
-		sprintf(cache, "INSERT INTO Information VALUES('%d','%s','%s','%lf')",
-			writedataPtr->acctNum, writedataPtr->data.Name,
-			writedataPtr->password, writedataPtr->data.balance);
-		if (mysql_query(con, cache))
-		{
-			finish_with_error(con);
-		}
-		writedataPtr = writedataPtr->next;
-	}
-	free(cache);
-	mysql_close(con);
-	return;
-}
-
-void Creat_database()
-{
-	MYSQL *con = mysql_init(NULL);
-
-	if (con == NULL)
-	{
-		fprintf(stderr, "%s\n", mysql_error(con));
-		exit(1);
-	}
-
-	if (mysql_real_connect(con, "127.0.0.1", "root", "123qwe",
-		NULL, 0, NULL, 0) == NULL)
-	{
-		fprintf(stderr, "%s\n", mysql_error(con));
-		mysql_close(con);
-		exit(1);
-	}
-
-	if (mysql_query(con, "CREATE DATABASE Bank"))
-	{
-		fprintf(stderr, "%s\n", mysql_error(con));
-		mysql_close(con);
-		return ;
-	}
-	fputs("Database creat successful!\n", stdout);
-	mysql_close(con);
-	return ;
-}

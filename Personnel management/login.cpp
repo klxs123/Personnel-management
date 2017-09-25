@@ -109,7 +109,7 @@ NodePtr Read_Saved_information(NodePtr* ppNode)
 		exit(1);
 	}
 
-	if (mysql_query(con, "SELECT * FROM Information LIMIT 0,3"))
+	if (mysql_query(con, "SELECT * FROM Information LIMIT 0,10"))
 	{
 		finish_with_error(con);
 	}

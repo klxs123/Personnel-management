@@ -274,3 +274,84 @@ void Enquiries_Data(NodePtr header)					// ²éÑ¯ÕË»§
 	fputs("This account has no information!\n", stdout);
 }
 
+void Creat_database()
+{
+	MYSQL *con = mysql_init(NULL);
+
+	if (con == NULL)
+	{
+		fprintf(stderr, "%s\n", mysql_error(con));
+		exit(1);
+	}
+
+	if (mysql_real_connect(con, "127.0.0.1", "root", "123qwe",
+		NULL, 0, NULL, 0) == NULL)
+	{
+		fprintf(stderr, "%s\n", mysql_error(con));
+		mysql_close(con);
+		exit(1);
+	}
+
+	if (mysql_query(con, "CREATE DATABASE Bank"))
+	{
+		fprintf(stderr, "%s\n", mysql_error(con));
+		mysql_close(con);
+		return;
+	}
+	fputs("Database creat successful!\n", stdout);
+	mysql_close(con);
+	return;
+}
+
+void finish_with_error(MYSQL *con)
+{
+	fprintf(stderr, "%s\n", mysql_error(con));
+	mysql_close(con);
+	exit(1);
+}
+
+void Writedata(Node* header)
+{
+	NodePtr writedataPtr = header;
+	int write_count = 0;
+	MYSQL *con = mysql_init(NULL);
+	if (con == NULL)
+	{
+		fprintf(stderr, "%s\n", mysql_error(con));
+		exit(1);
+	}
+
+	if (mysql_real_connect(con, "127.0.0.1", "root", "123qwe",
+		"Bank", 0, NULL, 0) == NULL)
+	{
+		finish_with_error(con);
+	}
+
+	if (mysql_query(con, "DROP TABLE IF EXISTS Information"))
+	{
+		finish_with_error(con);
+	}
+
+	if (mysql_query(con,
+		"CREATE TABLE Information(Account INT, Name TEXT, Password TEXT, Balance DOUBLE)"))
+	{
+		finish_with_error(con);
+	}
+
+	char *cache = (char*)malloc(100);
+	memset(cache, 0, 100);
+	while (writedataPtr != 0)
+	{
+		sprintf(cache, "INSERT INTO Information VALUES('%d','%s','%s','%lf')",
+			writedataPtr->acctNum, writedataPtr->data.Name,
+			writedataPtr->password, writedataPtr->data.balance);
+		if (mysql_query(con, cache))
+		{
+			finish_with_error(con);
+		}
+		writedataPtr = writedataPtr->next;
+	}
+	free(cache);
+	mysql_close(con);
+	return;
+}
