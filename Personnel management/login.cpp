@@ -93,16 +93,9 @@ int Creat_node(NodePtr* ppNode, Node Data)
 	return 0;
 }
 
-NodePtr Read_Saved_information(NodePtr* ppNode)
+NodePtr Read_Saved_information(NodePtr* ppNode, MYSQL *con)
 {
-	MYSQL *con = mysql_init(NULL);
 	Node Data = { 0 };
-	if (mysql_real_connect(con, "127.0.0.1", "root", "123qwe",
-		"Bank", 0, NULL, 0) == NULL)
-	{
-		finish_with_error(con);
-	}
-
 	if (con == NULL)
 	{
 		fprintf(stderr, "mysql_init() failed\n");
@@ -149,6 +142,5 @@ NodePtr Read_Saved_information(NodePtr* ppNode)
 		Creat_node(ppNode, Data);
 	}
 	mysql_free_result(result);
-	mysql_close(con);
 	return 0;
 }

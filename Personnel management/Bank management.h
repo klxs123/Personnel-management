@@ -7,6 +7,7 @@
 #define ture 1
 #define false 0
 
+
 const int MAX_MANAGE = 20;
 const char ADMIN_ACCOUNT[] = "admin";
 const char ADMIIN_PASSWORD[] = "666666";
@@ -36,15 +37,17 @@ int Data_synchronization(char[][20], NodePtr);
 int Write_array_information(NodePtr ,char[][20]);
 int login_accountdata(char manage[][20], char*);
 void Creat_database();
+void creat_new_record(NodePtr);
+void connect_database();
 void OutputData(NodePtr );
 void Enquiries_Data(NodePtr);
 void finish_with_error(MYSQL *con);
 void Print_updated_information(NodePtr);
 void Print_all_Data(Node *, char[], bool);
 void Writedata(Node *);
-NodePtr Get_newdata(void);
+NodePtr Get_newdata(NodePtr );
 NodePtr return_data(Node *);
 NodePtr recordIndex(Node *, int);
-NodePtr Read_Saved_information(NodePtr *);
+NodePtr Read_Saved_information(NodePtr *, MYSQL *);
 NodePtr changechoice(NodePtr, bool);
 NodePtr Get_ordinary_newdata(NodePtr);

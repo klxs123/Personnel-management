@@ -1,8 +1,8 @@
 #include "Bank management.h"
 
-static int INITIAL_ACCOUNT = 1000; 
+static int INITIAL_ACCOUNT = 1000;
 
-Node* Get_newdata(void)  //管理员获取新账户信息
+Node* Get_newdata(NodePtr header)  //管理员获取新账户信息
 {
 	Node* account = (Node*)malloc(sizeof(Node));
 	memset(account, 0, sizeof(Node));
@@ -23,13 +23,19 @@ Node* Get_newdata(void)  //管理员获取新账户信息
 		if (len >= strlen(cache_account))
 		{
 			account->acctNum = atoi(cache_account);
-			break;
+			if (!recordIndex(header, account->acctNum))
+			{
+				break;
+			}
+			fputs("This recordIndex is exist!\n", stdout);
 		}
 	}
+	
 	fputs("Please input Name, Password, Balance:\n--> ", stdout);
 	scanf("%s%s%lf", account->data.Name, account->password, &account->data.balance);
 	return account;
 }
+
 
 Node* Get_ordinary_newdata(NodePtr pNode)				//创建普通账户
 {
@@ -59,7 +65,7 @@ int newRecord(NodePtr *nodeptr, char manage[][20], bool Flag)
 	Node* Data = 0;
 	if (1 == Flag)
 	{
-		Data = Get_newdata();
+		Data = Get_newdata(*nodeptr);
 	}
 	else
 	{
@@ -88,6 +94,7 @@ int newRecord(NodePtr *nodeptr, char manage[][20], bool Flag)
 		*nodeptr = pNewNode;
 		CarNode = pNewNode;
 	}
+	creat_new_record(Data);
 	CarNode->acctNum = Data->acctNum;
 	strcpy(CarNode->password, Data->password);
 	strcpy(CarNode->data.Name, Data->data.Name);
@@ -284,7 +291,7 @@ void Creat_database()
 		exit(1);
 	}
 
-	if (mysql_real_connect(con, "127.0.0.1", "root", "123qwe",
+	if (mysql_real_connect(con, "127.0.0.1", "root", "root",
 		NULL, 0, NULL, 0) == NULL)
 	{
 		fprintf(stderr, "%s\n", mysql_error(con));
@@ -293,6 +300,12 @@ void Creat_database()
 	}
 
 	if (mysql_query(con, "CREATE DATABASE Bank"))
+	{
+		fprintf(stderr, "%s\n", mysql_error(con));
+		mysql_close(con);
+		return;
+	}
+	if (!mysql_query(con, "CREATE DATABASE Bank"))
 	{
 		fprintf(stderr, "%s\n", mysql_error(con));
 		mysql_close(con);
@@ -310,48 +323,3 @@ void finish_with_error(MYSQL *con)
 	exit(1);
 }
 
-void Writedata(Node* header)
-{
-	NodePtr writedataPtr = header;
-	int write_count = 0;
-	MYSQL *con = mysql_init(NULL);
-	if (con == NULL)
-	{
-		fprintf(stderr, "%s\n", mysql_error(con));
-		exit(1);
-	}
-
-	if (mysql_real_connect(con, "127.0.0.1", "root", "123qwe",
-		"Bank", 0, NULL, 0) == NULL)
-	{
-		finish_with_error(con);
-	}
-
-	if (mysql_query(con, "DROP TABLE IF EXISTS Information"))
-	{
-		finish_with_error(con);
-	}
-
-	if (mysql_query(con,
-		"CREATE TABLE Information(Account INT, Name TEXT, Password TEXT, Balance DOUBLE)"))
-	{
-		finish_with_error(con);
-	}
-
-	char *cache = (char*)malloc(100);
-	memset(cache, 0, 100);
-	while (writedataPtr != 0)
-	{
-		sprintf(cache, "INSERT INTO Information VALUES('%d','%s','%s','%lf')",
-			writedataPtr->acctNum, writedataPtr->data.Name,
-			writedataPtr->password, writedataPtr->data.balance);
-		if (mysql_query(con, cache))
-		{
-			finish_with_error(con);
-		}
-		writedataPtr = writedataPtr->next;
-	}
-	free(cache);
-	mysql_close(con);
-	return;
-}

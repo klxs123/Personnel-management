@@ -2,13 +2,16 @@
 #include "Bank management.h"
 static bool FLAG = 0;
 
+MYSQL *con;
+
 int main()
 {
 	NodePtr header = 0;
 	char manage[MAX_MANAGE][20] = { 0 };
-	Read_Saved_information(&header);					//读入所有账号信息
-	Write_array_information(header, manage);			//同步信息到字符数组
 	//Creat_database();
+	connect_database();
+	Read_Saved_information(&header, con);					//读入所有账号信息
+	Write_array_information(header, manage);			//同步信息到字符数组
 	int choice = 0;
 	while (1)
 	{
@@ -78,6 +81,7 @@ int main()
 			}
 		}
 	}
+	mysql_close(con);
 	return 0;
 }
 
@@ -128,3 +132,66 @@ int Login_system(char manage_data[][20])
 	}
 }
 
+void Writedata(Node* header)
+{
+	;
+}
+
+//void Writedata(Node* header)
+//{
+//	NodePtr writedataPtr = header;
+//	int write_count = 0;
+//
+//	if (mysql_query(con, "DROP TABLE IF EXISTS Information"))
+//	{
+//		finish_with_error(con);
+//	}
+//
+//	if (mysql_query(con,
+//		"CREATE TABLE Information(Account INT, Name TEXT, Password TEXT, Balance DOUBLE)"))
+//	{
+//		finish_with_error(con);
+//	}
+//
+//	char *cache = (char*)malloc(100);
+//	memset(cache, 0, 100);
+//	while (writedataPtr != 0)
+//	{
+//		sprintf(cache, "INSERT INTO Information VALUES('%d','%s','%s','%lf')",
+//			writedataPtr->acctNum, writedataPtr->data.Name,
+//			writedataPtr->password, writedataPtr->data.balance);
+//		if (mysql_query(con, cache))
+//		{
+//			finish_with_error(con);
+//		}
+//		writedataPtr = writedataPtr->next;
+//	}
+//	free(cache);
+//	return;
+//}
+
+void creat_new_record(NodePtr data)
+{
+	char *cache = (char*)malloc(50);
+	memset(cache, 0, 50);
+
+	sprintf(
+		cache,"INSERT INTO Information VALUES('%d','%s','%s','%lf')",
+		data->acctNum, data->data.Name, 
+		data->password, data->data.balance);
+
+	if (mysql_query(con, cache))
+	{
+		finish_with_error(con);
+	}
+}
+
+void connect_database()
+{
+	con = mysql_init(NULL);
+	if (mysql_real_connect(con, "127.0.0.1", "root", "root",
+		"Bank", 0, NULL, 0) == NULL)
+	{
+		finish_with_error(con);
+	}
+}
