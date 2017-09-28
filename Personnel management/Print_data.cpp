@@ -29,7 +29,7 @@ int EnterChoice(bool flag)
 				"		*         4 - print all accounts            * \n"
 				"		*         5 - seek Specify the account      * \n"
 				"		*         6 - Output to the specified file  * \n"
-				"		*         7 - end program and save          * \n"
+				"		*         7 - end program                   * \n"
 				"		* * * * * * * * * * * * * * * * * * * * * * * \n--> "
 			);
 		}
@@ -120,12 +120,19 @@ NodePtr changechoice(NodePtr findPtr, bool Flag, int account)
 		case 1:
 			fputs("Input name:\n-->", stdout);
 			scanf("%s", findPtr->data.Name);
+			deal_database(findPtr, 3, 1);
 			break;
 		case 2:
 			fputs("Input password:\n-->", stdout);
 			scanf("%s", findPtr->password);
+			deal_database(findPtr, 3, 2);
 			break;
 		case 3:
+			if (0 == Flag)
+			{
+				fputs("			Input Error!\n", stdout);
+				break;
+			}
 			fputs("Input change (+) or (-) balance: \n-->", stdout);
 			scanf("%lf", &balance);
 			balance += findPtr->data.balance;
@@ -134,6 +141,7 @@ NodePtr changechoice(NodePtr findPtr, bool Flag, int account)
 				fputs("			Lack of balance!\n",stdout);
 				break;
 			}
+			deal_database(findPtr, 3, 3);
 			findPtr->data.balance = balance;
 			break;
 		default:
@@ -141,7 +149,6 @@ NodePtr changechoice(NodePtr findPtr, bool Flag, int account)
 			break;
 		}
 	}
-	deal_database(findPtr, 3, 0);
 	return findPtr;
 }
 
@@ -179,12 +186,21 @@ int Login_Enterchoice(void)
 	}
 }
 
-void OutputData(NodePtr header)
+void OutputData(NodePtr header, char manage[], bool flag)
 {
+
+	int number = 0;
 	NodePtr findPtr = header;
-	char* Filename = 0;
+	char* Filename = (char*)malloc(20);
+	memset(Filename, 0, 20);
 	FILE* file = 0;
-	fputs("Please enter full path:", stdout);
+	if (manage)
+	{
+		number = atoi(manage);
+	}
+	fputs("Please enter full path, ", stdout);
+	fputs("Excmple:  D:\\work\\123.txt\n", stdout);
+	fputs("Do not include Spaces in the path name! Otherwise, you might write fail!\n--> ",stdout);
 	scanf("%s", Filename);
 	if ((file = fopen(Filename, "r+")) == NULL)
 	{
@@ -192,12 +208,21 @@ void OutputData(NodePtr header)
 	}
 	fprintf(file, "%-12s%-12s%-12s%-10s\n",
 		"AcctNum", "Name", "Password", "Balance");
+	if (0 == flag)
+	{
+		findPtr = database_record(number);
+		
+		fprintf(file, "%-12d%-12s%-12s%-10.2f\n",
+			findPtr->acctNum, findPtr->data.Name,
+			findPtr->password, findPtr->data.balance);
+		findPtr = findPtr->next;
+		return ;
+	}
 	while (findPtr != 0)
 	{
 		fprintf(file, "%-12d%-12s%-12s%-10.2f\n",
 			findPtr->acctNum, findPtr->data.Name,
 			findPtr->password, findPtr->data.balance);
-		fputs("\n", file);
 		findPtr = findPtr->next;
 	}
 	fclose(file);

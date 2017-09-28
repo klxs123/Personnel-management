@@ -4,13 +4,14 @@
 #include <stdlib.h>
 #include <my_global.h>
 #include <mysql.h>
+#include <conio.h>
 #define ture 1
 #define false 0
 
 
 const int MAX_MANAGE = 20;
 const char ADMIN_ACCOUNT[] = "admin";
-const char ADMIIN_PASSWORD[] = "666666";
+const char ADMIN_PASSWORD[] = "666666";
 
 typedef struct _manage
 {
@@ -38,7 +39,7 @@ int Write_array_information(NodePtr ,char[][20]);
 int login_accountdata(char manage[][20], char*);
 void Creat_database();
 void connect_database();
-void OutputData(NodePtr );
+void OutputData(NodePtr ,char[] ,bool);
 void Enquiries_Data(NodePtr);
 void deal_database(NodePtr, int, int);
 void finish_with_error(MYSQL *con);
@@ -46,7 +47,7 @@ void Print_updated_information(NodePtr);
 void Print_all_Data(Node *, char[], bool);
 NodePtr Get_newdata(NodePtr );
 NodePtr return_data(Node *);
-NodePtr recordIndex(Node *, int);
+NodePtr database_record(int);
 NodePtr Read_Saved_information(NodePtr *, MYSQL *);
 NodePtr changechoice(NodePtr, bool, int);
 NodePtr Get_ordinary_newdata(NodePtr);

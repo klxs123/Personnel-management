@@ -4,7 +4,7 @@
 int Write_array_information(NodePtr pNode, char manage[][20])	//写入账号密码到数组
 {
 	strcpy(manage[0], ADMIN_ACCOUNT);
-	strcpy(manage[1], ADMIIN_PASSWORD);
+	strcpy(manage[1], ADMIN_PASSWORD);
 	NodePtr FindPtr = pNode;
 	if (pNode == 0)
 	{
@@ -102,7 +102,7 @@ NodePtr Read_Saved_information(NodePtr* ppNode, MYSQL *con)
 		exit(1);
 	}
 
-	if (mysql_query(con, "SELECT * FROM Information LIMIT 0,10"))
+	if (mysql_query(con, "SELECT * FROM Information"))
 	{
 		finish_with_error(con);
 	}
@@ -115,9 +115,10 @@ NodePtr Read_Saved_information(NodePtr* ppNode, MYSQL *con)
 	}
 
 	//int num_fields = mysql_num_fields(result); //获取列的个数
+	//MYSQL_FIELD *field;
+
 	int num_fields = 4;
 	MYSQL_ROW row;
-	MYSQL_FIELD *field;
 
 	while ((row = mysql_fetch_row(result)))
 	{

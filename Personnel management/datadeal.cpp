@@ -23,11 +23,10 @@ Node* Get_newdata(NodePtr header)  //管理员获取新账户信息
 		if (len >= strlen(cache_account))
 		{
 			account->acctNum = atoi(cache_account);
-			if (!recordIndex(header, account->acctNum))
+			if (!database_record(account->acctNum))
 			{
 				break;
 			}
-			fputs("This recordIndex is exist!\n", stdout);
 		}
 	}
 	
@@ -41,7 +40,7 @@ Node* Get_ordinary_newdata(NodePtr pNode)				//创建普通账户
 {
 	Node* account = (Node*)malloc(sizeof(Node));
 	memset(account, 0, sizeof(Node));
-	while (recordIndex(pNode, INITIAL_ACCOUNT))
+	while (database_record(INITIAL_ACCOUNT))
 	{
 		INITIAL_ACCOUNT++;
 	}
@@ -74,32 +73,24 @@ int newRecord(NodePtr *nodeptr, char manage[][20], bool Flag)
 	NodePtr CarNode = *nodeptr;
 	if (*nodeptr == 0)
 	{
-		//信息为空
 		*nodeptr = (Node*)malloc(sizeof(Node));
 		memset(*nodeptr, 0, sizeof(Node));
 		CarNode = *nodeptr;
 	}
 	else
 	{
-		//账号已被建立
-		if (recordIndex(*nodeptr, Data->acctNum))
-		{
-			printf("Account #%d already contains information.\n",
-				Data->acctNum);
-			return 0;
-		}
 		Node* pNewNode = (Node*)malloc(sizeof(Node));
 		memset(pNewNode, 0, sizeof(Node));
 		pNewNode->next = CarNode;
 		*nodeptr = pNewNode;
 		CarNode = pNewNode;
 	}
-	deal_database(Data,1,0);
 	CarNode->acctNum = Data->acctNum;
 	strcpy(CarNode->password, Data->password);
 	strcpy(CarNode->data.Name, Data->data.Name);
 	CarNode->data.balance = Data->data.balance;
 	return_value = Data_synchronization(manage, CarNode);
+	deal_database(Data, 1, 0);
 	return return_value;
 }
 
@@ -111,22 +102,23 @@ int updateData(NodePtr node, char return_value[], bool Flag)
 		account = atoi(return_value);
 	}
 	double balance = 0;
-	NodePtr findPtr = node;
+	NodePtr findPtr = 0;
 	if (1 == Flag)
 	{
 		printf("Enter account to update : ");
 		scanf("%d", &account);
 	}
-	if (findPtr = recordIndex(findPtr, account))
+	findPtr = database_record(account);
+	if (!findPtr)
 	{
-		Print_updated_information(findPtr);
-		findPtr = changechoice(findPtr, Flag, account);
-		Print_updated_information(findPtr);
+		printf("Acount #%d has no information.\n", account);
 		return 0;
 	}
 	else
 	{
-		printf("Acount #%d has no information.\n", account);
+		Print_updated_information(findPtr);
+		findPtr = changechoice(findPtr, Flag, account);
+		Print_updated_information(findPtr);
 		return 0;
 	}
 }
@@ -144,20 +136,6 @@ int Data_synchronization(char manage[][20], NodePtr CarNode)  //信息同步到数组
 	_itoa(CarNode->acctNum, manage[amount], 10);
 	strcpy(manage[amount + 1], CarNode->password);
 	return amount;
-}
-
-Node* recordIndex(Node* pNode, int account) 
-{
-	NodePtr findPtr = pNode;
-	while (findPtr)
-	{
-		if (findPtr->acctNum == account)
-		{
-			return findPtr;
-		}
-		findPtr = findPtr->next;
-	}
-	return 0;
 }
 
 int deleteRecord(NodePtr *ppNode, bool Flag)
@@ -306,15 +284,26 @@ void Creat_database()
 		mysql_close(con);
 		return;
 	}
-	if (!mysql_query(con, "CREATE DATABASE Bank"))
+	fputs("Database creat successful!\n", stdout);
+
+	con = mysql_init(NULL);
+
+	if (con == NULL)
 	{
 		fprintf(stderr, "%s\n", mysql_error(con));
-		mysql_close(con);
-		return;
+		exit(1);
 	}
-	fputs("Database creat successful!\n", stdout);
+
+	if (mysql_real_connect(con, "127.0.0.1", "root", "root","Bank", 0, NULL, 0) == NULL)
+	{
+		finish_with_error(con);
+	}
+
+	if (mysql_query(con, "CREATE TABLE Information(Account INT, Name TEXT, Psaaword TEXT, Balance DOUBLE)")) 
+	{
+		finish_with_error(con);
+	}
 	mysql_close(con);
-	return;
 }
 
 void finish_with_error(MYSQL *con)
